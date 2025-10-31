@@ -22,15 +22,18 @@ namespace Hibzz.DependencyResolver
         {
             string packageName = default;
             string moveFileName = default;
-            #if UNITY_6000_0_OR_NEWER
-            packageName = package;
-            moveFileName = "MoveToPackages_6";
-            #else 
-            packageName =$"{package}@{version}";
-            moveFileName = "MoveToPackages";
-            #endif
+            if (string.IsNullOrEmpty(version))
+            {
+                packageName = package;
+                moveFileName = "MoveToPackages_6";
+            }
+            else
+            {
+                packageName = $"{package}@{version}";
+                moveFileName = "MoveToPackages";
+            }
             string dir = Path.Combine("Library/PackageCache", packageName);
-            if (!Directory.Exists(dir))
+            if (Directory.Exists(dir))
             {
                 return;
             }
@@ -92,11 +95,7 @@ namespace Hibzz.DependencyResolver
                 
                 string[] ss = baseName.Split("@");
                 string packageName = ss[0];
-                #if UNITY_6000_0_OR_NEWER
-                string version = "";
-                #else 
-                string version = ss[1];
-                #endif
+                string version = ss.Length > 1 ? ss[1] : string.Empty;
 
                 MoveToPackage(packageName, version);
             }
